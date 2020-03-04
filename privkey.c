@@ -10,6 +10,24 @@
 #include "gosthash2012.h"
 #include "applink.c"
 
+#define MAX_HEADER 20000
+char header_buf[MAX_HEADER];
+int header_len;
+
+int find_public8_in_header_buf(char *pub)
+{
+	int i;
+	char buf[10];
+	buf[0]=0x8a;
+	buf[1]=0x08;
+	memcpy(buf+2, pub, 8);
+	for(i=0;i<header_len-10;i++)
+	{
+		if (memcmp(header_buf+i, buf, 10)==0) return 0; //found public8 in header.key
+	}
+	return 1; //error
+}
+
 //remove the function if link failed
 void inc_counter(unsigned char *counter, size_t counter_bytes)
 {
@@ -215,7 +233,8 @@ BIGNUM *remove_mask_and_check_public(unsigned char *oid_param_set8, BIGNUM *key_
 
 	store_bignum(X, outbuf, sizeof(outbuf));
 	BUF_reverse(public_X, outbuf, sizeof(outbuf));
-	if (memcmp(public_X, public8, 8) != 0) { result = 1; goto err; }
+//	if (memcmp(public_X, public8, 8) != 0) { result = 1; goto err; }
+	if (find_public8_in_header_buf(public_X)) { result = 1; goto err; }
 
 	result = 0; //ok
 err:
@@ -300,15 +319,12 @@ int check_oid(unsigned char *str1, int str1_len, unsigned char *str2)
 	return 1; //not found
 }
 
-#define MAX_HEADER 20000
 int read_container(char *fpath, int flag2, char *salt12, char *primary_key, char *masks_key, char *public8, int *param_set)
 {
-	int result;
+	int result=0;
 	char primary_path[1024+30];
 	char masks_path[1024+30];
 	char header_path[1024+30];
-	char header_buf[MAX_HEADER];
-	int header_len;
 	int i, len, pos, size_hdr;
 
 	if (strlen(fpath)>1024) { result = 1; goto err; }
@@ -335,16 +351,16 @@ int read_container(char *fpath, int flag2, char *salt12, char *primary_key, char
 	if (read_file(masks_path, 4, masks_key, len_material_list[i])) { result = 1; goto err; }
 	if (read_file(masks_path, 0x26+len_material_list[i]-32, salt12, 12)) { result = 1; goto err; }
 //------------------ get public8 -----------------------
-	pos = header_len - 51;
-	if (memcmp(header_buf+pos, "\x8a\x8", 2) == 0)
-	{
-		memcpy(public8,header_buf+pos+2,8);
-		result = 0; //ok
-	}
-	else
-		result = 2; //not found
+//	pos = header_len - 51;
+//	if (memcmp(header_buf+pos, "\x8a\x8", 2) == 0)
+//	{
+//		memcpy(public8,header_buf+pos+2,8);
+//		result = 0; //ok
+//	}
+//	else
+//    		result = 2; //not found
 err:
-	OPENSSL_cleanse(header_buf, sizeof(header_buf));
+//	OPENSSL_cleanse(header_buf, sizeof(header_buf));
 	return result;
 }
 

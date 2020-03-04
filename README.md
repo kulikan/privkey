@@ -1,7 +1,7 @@
 # privkey
-Convert CryptoPro container to OpenSSL container
+Converts a private key CryptoPro => OpenSSL container
 
-You need to have Strawberry perl and Visual Studio installed
+You need to install Strawberry perl and Visual Studio C++
 
 ### Contents
 
@@ -46,3 +46,16 @@ openssl cms -sign -inkey private.key -in file.txt -CAfile CA.cer -signer signer.
 ~~~
 openssl cms -verify -content file.txt -in file.txt.sgn -CAfile CA.cer -signer signer.cer -engine gost -inform DER -noattr -binary
 ~~~
+
+### Executables
+
+~~~
+You can find the privkey.exe executable in the winfiles.rar arhive.
+You can also compile Visual Studio 14.0 (as well as 2019) using comp_cl32.bat from winfiles.rar archive.
+~~~
+
+### Contacts
+
+Mike Koulikow
+ss440@bk.ru
+https://habr.com/users/shukan/
