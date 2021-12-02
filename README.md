@@ -53,9 +53,3 @@ openssl cms -verify -content file.txt -in file.txt.sgn -CAfile CA.cer -signer si
 You can find the privkey.exe executable in the winfiles.rar arhive.
 You can also compile Visual Studio 14.0 (as well as 2019) using comp_cl32.bat from winfiles.rar archive.
 ~~~
-
-### Contacts
-
-Mike Koulikow
-ss440@bk.ru
-https://habr.com/users/shukan/
